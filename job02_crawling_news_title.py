@@ -74,7 +74,7 @@ driver.get(url)
 
 titles=[]
 
-pages=[110,110,110,75,110,72]
+pages=[146,110,110,75,110,72]
 
 # for i in range(1, 5):  # 1부터 5까지
 #     for j in range(1, 6):  # 1부터 5까지
@@ -85,11 +85,9 @@ pages=[110,110,110,75,110,72]
 
         #title = driver.find_element(xpath).text
 
-
-
 df_titles=pd.DataFrame()
 
-for l in range(2):
+for l in range(6):
 
     section_url='https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=10{}'.format(l)
     #driver.get(url)
@@ -102,40 +100,17 @@ for l in range(2):
         time.sleep(0.5)
         for i in range(1, 5):  # 1부터 5까지
             for j in range(1, 6):  # 1부터 5까지
-
-                try:
-
-
                 # xpath = '//*[@id="section_body"]/ul[{}]/li[{}]/dl/dt[{}]/a'.format(i, j, i)
-                    title = driver.find_element('xpath', '//*[@id="section_body"]/ul[{}]/li[{}]/dl/dt[2]/a'.format(i, j)).text
-                    title = re.compile('[^가-힣]').sub(' ', title)
-                    titles.append(title)
-                except:
-                    print('error {} {} {} {}'.format(l,k,i,j))
+                title = driver.find_element('xpath', '//*[@id="section_body"]/ul[{}]/li[{}]/dl/dt[2]/a'.format(i, j)).text
+                title = re.compile('[^가-힣]').sub(' ', title)
+                titles.append(title)
 
+    df_section_title=pandas.DataFrame(titles,columns=['titles'])
+    df_section_title['category']=category[l]
 
-        if k%10==0:
+    df_titles=pd.concat([df_titles,df_section_title],ignore_index=True)
 
-
-            df_section_title=pandas.DataFrame(titles,columns=['titles'])
-
-            df_section_title['category']=category[l]
-
-            df_titles=pd.concat([df_titles,df_section_title],ignore_index=True)
-
-            df_titles.to_csv('./crawling_data/crawling_data_{}_{}.csv'.format(l,k),index=False)
-
-            titles=[]
-
-    df_section_title = pandas.DataFrame(titles, columns=['titles'])
-
-    df_section_title['category'] = category[l]
-
-    df_titles = pd.concat([df_titles, df_section_title], ignore_index=True)
-
-    df_titles.to_csv('./crawling_data/crawling_data_last.csv', index=False)
-
-   # titles = []
+df_titles.to_csv('./crawling_data/crawling_data.csv',index=False)
 
 
 print(df_titles.head())
@@ -155,5 +130,3 @@ print(cnt)
 # //*[@id="section_body"]/ul[4]/li[5]/dl/dt[2]/a
 
 # //*[@id="section_body"]/ul[1]/li[1]/dl/dt[2]/a
-
-# //*[@id="section_body"]/ul[4]/li[5]/dl/dt[2]/a
